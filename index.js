@@ -18,15 +18,14 @@ app.use(express.static(__dirname + '/public'));
 var usernames = {};
 var numUsers = 0;
 
-// current room
-var room_id = 0;
-var room_occupied = false
+// current rooms
+var rooms = {};
 
 io.on('connection', function (socket) {
   var addedUser = false;
 
   console.log("socket-id: " + socket.id);
-  socket.broadcast.emit('pub', socket.id);
+  // socket.broadcast.emit('pub', socket.id);
 
   // when the client emits 'new message', this listens and executes
   socket.on('new message', function (data) {
@@ -90,23 +89,31 @@ io.on('connection', function (socket) {
 
   socket.on('create_server', function () {
     room_id = Math.floor(Math.random() * 1000);
-    room_occupied = true;
     socket.emit('room_id', room_id);
     socket.join(room_id.toString());
+    rooms[room_id] = false;
   });
 
   socket.on('join_server', function (server_id) {
-    if (room_occupied && room_id === parseInt(server_id)) {
-      socket.join(room_id.toString());
-      socket.emit('joined_server', room_id)
+    if (rooms[server_id] !== undefined) {
+      if (rooms[server_id]) {
+        socket.emit('joined_server', "game has already started");
+      } else {
+        socket.join(server_id.toString());
+        socket.emit('joined_server', server_id.toString());
+      }
+      
     } else {
       socket.emit('joined_server', "failed");
     }
   });
 
+  socket.on('start_game', function() {
+    room_to_start = socket.rooms[1];
+    rooms[room_to_start] = true;   
+  })
+
   socket.on('room_test', function (data) {
-    if (room_id) {
-      io.sockets.in(room_id.toString()).emit('room_test_stoc', data);
-    }
+    io.sockets.in(socket.rooms[1]).emit('room_test_stoc', data);    
   });
 });

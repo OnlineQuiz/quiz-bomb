@@ -240,6 +240,7 @@ $(function() {
     // alert(room_id);
   });
 
+
   // Socket events
 
   // Whenever the server emits 'login', log the login message
@@ -292,6 +293,10 @@ $(function() {
   socket.on('room_id', function (data) {
     $('#room_id').html(data);
     alert('Room with id: ' + data + " created.");
+    $('#creators_options').html('<button id="start">Start Game</button>');
+    $('#start').click(function(){
+      socket.emit('start_game');
+    });
   })
 
   socket.on('joined_server', function (data) {
@@ -299,9 +304,9 @@ $(function() {
   })
 
   socket.on('room_test_stoc', function (data) {
-    alert('only ppl in the room are supposed to see this: ' + data);
+    // alert('only ppl in the room are supposed to see this: ' + data);
+    // console.log('only ppl in the room are supposed to see this: ' + data);
+    $('#data').html('only ppl in the room are supposed to see this: ' + data);
   })
-
-
 
 });
