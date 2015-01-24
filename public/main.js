@@ -300,13 +300,17 @@ $(function() {
   })
 
   socket.on('joined_server', function (data) {
-    alert('Server Joined ' + data);
+    alert(data);
   })
 
   socket.on('room_test_stoc', function (data) {
     // alert('only ppl in the room are supposed to see this: ' + data);
     // console.log('only ppl in the room are supposed to see this: ' + data);
     $('#data').html('only ppl in the room are supposed to see this: ' + data);
+  })
+
+  socket.on('game_started', function() {
+    alert('Game has started. No one can join this server ')
   })
 
 });

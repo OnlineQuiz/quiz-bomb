@@ -100,17 +100,18 @@ io.on('connection', function (socket) {
         socket.emit('joined_server', "game has already started");
       } else {
         socket.join(server_id.toString());
-        socket.emit('joined_server', server_id.toString());
+        socket.emit('joined_server', 'Server Joined: ' + server_id.toString());
       }
       
     } else {
-      socket.emit('joined_server', "failed");
+      socket.emit('joined_server', "Join Failed");
     }
   });
 
   socket.on('start_game', function() {
     room_to_start = socket.rooms[1];
-    rooms[room_to_start] = true;   
+    rooms[room_to_start] = true;
+    socket.emit('game_started');
   })
 
   socket.on('room_test', function (data) {
