@@ -224,22 +224,7 @@ $(function() {
   });
 
   
-  $('#create_server').click(function(){
-    socket.emit('create_server');
-  });
-
-  $('#join_server').click(function(){
-    var room_id = $('#server_id').val();
-    socket.emit('join_server', room_id);
-    // alert(room_id);
-  });
-
-  $('#room_test_btn').click(function(){
-    var data = $('#room_test_data').val();
-    socket.emit('room_test', data);
-    // alert(room_id);
-  });
-
+  
 
   // Socket events
 
@@ -282,27 +267,49 @@ $(function() {
     removeChatTyping(data);
   });
 
-  socket.on('room_id', function (data) {
-    $('#room_id').html(data);
-    alert('Room with id: ' + data + " created.");
-    $('#creators_options').html('<button id="start">Start Game</button>');
-    $('#start').click(function(){
-      socket.emit('start_game');
+  function client_auth() {
+
+    $('#create_server').click(function(){
+      socket.emit('create_server');
     });
-  })
 
-  socket.on('joined_server', function (data) {
-    alert(data);
-  })
+    $('#join_server').click(function(){
+      var room_id = $('#server_id').val();
+      socket.emit('join_server', room_id);
+      // alert(room_id);
+    });
 
-  socket.on('room_test_stoc', function (data) {
-    // alert('only ppl in the room are supposed to see this: ' + data);
-    // console.log('only ppl in the room are supposed to see this: ' + data);
-    $('#data').html('only ppl in the room are supposed to see this: ' + data);
-  })
+    $('#room_test_btn').click(function(){
+      var data = $('#room_test_data').val();
+      socket.emit('room_test', data);
+      // alert(room_id);
+    });
 
-  socket.on('game_started', function() {
-    alert('Game has started. No one can join this server ')
-  })
+
+    socket.on('room_id', function (data) {
+      $('#room_id').html(data);
+      alert('Room with id: ' + data + " created.");
+      $('#creators_options').html('<button id="start">Start Game</button>');
+      $('#start').click(function(){
+        socket.emit('start_game');
+      });
+    });
+
+    socket.on('joined_server', function (data) {
+      alert(data);
+    });
+
+    socket.on('room_test_stoc', function (data) {
+      // alert('only ppl in the room are supposed to see this: ' + data);
+      // console.log('only ppl in the room are supposed to see this: ' + data);
+      $('#data').html('only ppl in the room are supposed to see this: ' + data);
+    });
+
+    socket.on('game_started', function() {
+      alert('Game has started. No one can join this server ')
+    });
+  }
+
+  client_auth();
 
 });

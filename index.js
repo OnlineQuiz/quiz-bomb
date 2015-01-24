@@ -86,34 +86,49 @@ io.on('connection', function (socket) {
     }
   });
 
-  socket.on('create_server', function () {
-    room_id = Math.floor(Math.random() * 1000);
-    socket.emit('room_id', room_id);
-    socket.join(room_id.toString());
-    rooms[room_id] = false;
-  });
+/** 
+* The following code is for app authentication.
+* It supports users to make a new room or join existing room
+* Once the admin starts the game, no new users can join that room
+*/
 
-  socket.on('join_server', function (server_id) {
-    if (rooms[server_id] !== undefined) {
-      if (rooms[server_id]) {
-        socket.emit('joined_server', "game has already started");
+  function app_auth() {
+
+    socket.on('create_server', function () {
+      room_id = Math.floor(Math.random() * 1000);
+      socket.emit('room_id', room_id);
+      socket.join(room_id.toString());
+      rooms[room_id] = false;
+    });
+
+    socket.on('join_server', function (server_id) {
+      if (rooms[server_id] !== undefined) {
+        if (rooms[server_id]) {
+          socket.emit('joined_server', "game has already started");
+        } else {
+          socket.join(server_id.toString());
+          socket.emit('joined_server', 'Server Joined: ' + server_id.toString());
+        }
       } else {
-        socket.join(server_id.toString());
-        socket.emit('joined_server', 'Server Joined: ' + server_id.toString());
+        socket.emit('joined_server', "Join Failed");
       }
-      
-    } else {
-      socket.emit('joined_server', "Join Failed");
-    }
-  });
+    });
 
-  socket.on('start_game', function() {
-    room_to_start = socket.rooms[1];
-    rooms[room_to_start] = true;
-    socket.emit('game_started');
-  })
+    socket.on('start_game', function() {
+      room_to_start = socket.rooms[1];
+      rooms[room_to_start] = true;
+      socket.emit('game_started');
+    });
 
-  socket.on('room_test', function (data) {
-    io.sockets.in(socket.rooms[1]).emit('room_test_stoc', data);    
-  });
+    socket.on('room_test', function (data) {
+      io.sockets.in(socket.rooms[1]).emit('room_test_stoc', data);    
+    });
+  
+  }
+
+  app_auth();
+
+  
+
+
 });
