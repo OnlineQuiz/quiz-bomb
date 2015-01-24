@@ -21,8 +21,14 @@ var numUsers = 0;
 io.on('connection', function (socket) {
   var addedUser = false;
 
+  console.log("socket-id: " + socket.id);
+  socket.broadcast.emit('pub', socket.id);
+
   // when the client emits 'new message', this listens and executes
   socket.on('new message', function (data) {
+
+    io.to(socket.id).emit('pvt', socket.id + "data: " + data);
+    console.log("pvt: " + socket.id + ", data: " + data);
     // we tell the client to execute 'new message'
     socket.broadcast.emit('new message', {
       username: socket.username,
@@ -32,6 +38,7 @@ io.on('connection', function (socket) {
 
   // when the client emits 'add user', this listens and executes
   socket.on('add user', function (username) {
+
     // we store the username in the socket session for this client
     socket.username = username;
     // add the client's username to the global list
