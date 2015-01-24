@@ -193,7 +193,7 @@ $(function() {
   $window.keydown(function (event) {
     // Auto-focus the current input when a key is typed
     if (!(event.ctrlKey || event.metaKey || event.altKey)) {
-      $currentInput.focus();
+      // $currentInput.focus();
     }
     // When the client hits ENTER on their keyboard
     if (event.which === 13) {
@@ -221,6 +221,23 @@ $(function() {
   // Focus input when clicking on the message input's border
   $inputMessage.click(function () {
     $inputMessage.focus();
+  });
+
+  
+  $('#create_server').click(function(){
+    socket.emit('create_server');
+  });
+
+  $('#join_server').click(function(){
+    var room_id = $('#server_id').val();
+    socket.emit('join_server', room_id);
+    // alert(room_id);
+  });
+
+  $('#room_test_btn').click(function(){
+    var data = $('#room_test_data').val();
+    socket.emit('room_test', data);
+    // alert(room_id);
   });
 
   // Socket events
@@ -271,4 +288,20 @@ $(function() {
   socket.on('stop typing', function (data) {
     removeChatTyping(data);
   });
+
+  socket.on('room_id', function (data) {
+    $('#room_id').html(data);
+    alert('Room with id: ' + data + " created.");
+  })
+
+  socket.on('joined_server', function (data) {
+    alert('Server Joined ' + data);
+  })
+
+  socket.on('room_test_stoc', function (data) {
+    alert('only ppl in the room are supposed to see this: ' + data);
+  })
+
+
+
 });
