@@ -24,14 +24,13 @@ var rooms = {};
 io.on('connection', function (socket) {
   var addedUser = false;
 
-  console.log("socket-id: " + socket.id);
-  // socket.broadcast.emit('pub', socket.id);
+  console.log("New user connected. Socket-id: " + socket.id);
+  
 
   // when the client emits 'new message', this listens and executes
   socket.on('new message', function (data) {
-
-    io.to(socket.id).emit('pvt', socket.id + "data: " + data);
-    console.log("pvt: " + socket.id + ", data: " + data);
+    console.log('\nNew message received from: ' + socket.id + '.\n Message: ' + data)
+    
     // we tell the client to execute 'new message'
     socket.broadcast.emit('new message', {
       username: socket.username,

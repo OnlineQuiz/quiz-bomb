@@ -277,14 +277,6 @@ $(function() {
     addChatTyping(data);
   });
 
-  socket.on('pub', function (data) {
-    alert("public msg:" + data);
-  });
-
-  socket.on('pvt', function (data) {
-    alert("private msg:" + data);
-  });
-
   // Whenever the server emits 'stop typing', kill the typing message
   socket.on('stop typing', function (data) {
     removeChatTyping(data);
