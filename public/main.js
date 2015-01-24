@@ -323,6 +323,14 @@ $(function() {
 
     socket.on('ans_correct', function () {
       $('#info').html("Your answer is correct! Next player's turn.");
+    });
+
+    socket.on('ans_wrong', function () {
+      $('#info').html("Your answer is wrong! You're out! :(");
+    });
+
+    socket.on('victory', function () {
+      $('#info').html("You are the last player surviving so you have won!");
     })
   }
 

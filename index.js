@@ -101,7 +101,7 @@ io.on('connection', function (socket) {
         player.emit('victory');
         return ;
       }
-      
+
       player.emit('qn', {
         'id': 1,
         'question': "What's the colour of the sky?",
@@ -109,10 +109,21 @@ io.on('connection', function (socket) {
       })
 
       player.on('ans', function (data) {
+        if (counter >= list.length) {
+            counter = 0;
+          }
         if (data === "blue") {
           player.emit('ans_correct');
-          ask(list[++counter]);
+        } else {
+          player.emit('ans_wrong');
+          var index = list.indexOf(player_id);
+          
+          if (index > -1) {
+            list.splice(index, 1);
+          }
+
         }
+        ask(list[++counter]);
       });
       
     }
