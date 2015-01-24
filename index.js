@@ -86,6 +86,44 @@ io.on('connection', function (socket) {
     }
   });
 
+/**
+* The following code is for starting the game.
+* It takes as a single argument, an array of 
+*     socket ids connected to the room.
+*/
+
+  function start_game(list) {
+    var counter = 0;
+    function ask( player_id ) {
+      var player = io.sockets.connected[player_id];
+
+      if (list.length === 1) {
+        player.emit('victory');
+        return ;
+      }
+      
+      player.emit('qn', {
+        'id': 1,
+        'question': "What's the colour of the sky?",
+        'answer' : "blue"
+      })
+
+      player.on('ans', function (data) {
+        if (data === "blue") {
+          player.emit('ans_correct');
+          ask(list[++counter]);
+        }
+      });
+      
+    }
+
+    function check() {
+      
+    }
+
+    ask(list[counter]);
+  }
+
 /** 
 * The following code is for app authentication.
 * It supports users to make a new room or join existing room
@@ -117,7 +155,17 @@ io.on('connection', function (socket) {
     socket.on('start_game', function() {
       room_to_start = socket.rooms[1];
       rooms[room_to_start] = true;
-      socket.emit('game_started');
+      
+
+      var sckts = [];
+      for (var skt in io.sockets.adapter.rooms[room_to_start]) {
+        sckts.push(skt);
+      }
+
+      socket.emit('game_started', sckts);
+
+      start_game(sckts);
+
     });
 
     socket.on('room_test', function (data) {

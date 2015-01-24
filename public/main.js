@@ -305,11 +305,27 @@ $(function() {
       $('#data').html('only ppl in the room are supposed to see this: ' + data);
     });
 
-    socket.on('game_started', function() {
-      alert('Game has started. No one can join this server ')
+    socket.on('game_started', function(data) {
+      alert('Game has started. No one can join this server ' + JSON.stringify(data));
     });
   }
 
   client_auth();
+
+  function game() {
+    socket.on('qn', function (qn_data) {
+      $('#qn').html(qn_data.question);
+    });
+
+    $('#play').click(function() {
+      socket.emit('ans', $('#ans').val())
+    });
+
+    socket.on('ans_correct', function () {
+      $('#info').html("Your answer is correct! Next player's turn.");
+    })
+  }
+
+  game();
 
 });
