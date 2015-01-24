@@ -17,6 +17,8 @@ app.use(express.static(__dirname + '/public'));
 // usernames which are currently connected to the chat
 var usernames = {};
 var numUsers = 0;
+//////////////////////////////////////////////////////////
+var socketids = {};
 
 // current rooms
 var rooms = {};
@@ -42,9 +44,15 @@ io.on('connection', function (socket) {
   socket.on('add user', function (username) {
 
     // we store the username in the socket session for this client
-    socket.username = username;
+    //////////////////////////////////////////////////////////////
+    socket.username = data[0];
     // add the client's username to the global list
-    usernames[username] = username;
+    usernames[numUsers] = data[0];
+
+    socketids[numUsers] = data[1];
+
+///////////////////////////////////////////////////////////////////
+
     ++numUsers;
     addedUser = true;
     socket.emit('login', {
@@ -85,6 +93,32 @@ io.on('connection', function (socket) {
       });
     }
   });
+
+  ///////////////////////////////////////////////////////////////////////
+  socket.on('start quiz', function () {
+    for (var i = 0; i < numUsers; i++) {
+      io.to(socketids[i]).emit('quiz question', {
+        username: "Quiz Master",
+        message: "Here's your question. These are your options - a, b, c, d"
+      })
+
+      socket.on('answer', function (data) {
+        if (data != "a") {
+          io.to(socketids[i]).emit('quiz question response', {
+        username: "Quiz Master",
+        message: "Sorry wrong answer"
+      })
+
+
+        };
+
+      })
+
+       };
+
+  })
+});
+
 
 /** 
 * The following code is for app authentication.

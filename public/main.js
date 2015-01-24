@@ -57,7 +57,18 @@ $(function() {
     // Prevent markup from being injected into the message
     message = cleanInput(message);
     // if there is a non-empty message and a socket connection
-    if (message && connected) {
+
+/////////////////////////////////////////////
+    alert(message + (message == "start"));
+    if(message == "start") {  
+    alert("here we are")  ;
+      socket.emit('start quiz');
+    }
+
+
+/////////////////////////////////////////////
+
+    else if (message && connected) {
       $inputMessage.val('');
       addChatMessage({
         username: username,
@@ -311,5 +322,31 @@ $(function() {
   }
 
   client_auth();
+
+//////////////////////////////////////////////////////
+  socket.on('quiz question', function (data){
+    addChatMessage(data);
+
+
+    var message = $inputMessage.val();
+    // Prevent markup from being injected into the message
+    message = cleanInput(message);
+    // if there is a non-empty message and a socket connection
+    if (message && connected) {
+      $inputMessage.val('');
+      addChatMessage({
+        username: username,
+        message: message
+      });
+      // tell server to execute 'answer' and send along one parameter
+      socket.emit('answer', message);
+    }   
+
+  })
+
+  socket.on('quiz question response', function (data) {
+    addChatMessage(data);
+  })
+
 
 });
