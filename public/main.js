@@ -313,7 +313,8 @@ $(function() {
   client_auth();
 
   function game() {
-    $('#ans').html("").hide();
+    $('#ans').html("")
+    $('#ans').hide();
     $('#play').hide();
 
     socket.on('qn', function (qn_data) {
@@ -326,12 +327,14 @@ $(function() {
 
 
     $('#play').click(function() {
-      socket.emit('ans', $('#ans').val())
       $('#qn').html("");
       $('#round').html("");
-      $('#ans').html("");
       $('#ans').hide();
       $('#play').hide();
+
+      socket.emit('ans', $('#ans').val())
+      $('#ans').val("");
+      
     });
 
     socket.on('ans_correct', function () {

@@ -92,11 +92,12 @@ io.on('connection', function (socket) {
 *     socket ids connected to the room.
 */
 
-  function start_game(list) {
+  function start_game(list, rnum) {
     var player_counter = 0;
-    var round_num = 1;
+    var round_num = rnum;
     function ask( player_id ) {
-      console.log('plid: ' + player_id)
+      console.log('current player plid: ' + player_id + ', index of player' + list.indexOf(player_id))
+      console.log('current list: ' + list);
       var player = io.sockets.connected[player_id];
 
       console.log('listlength: ' + list.length)
@@ -105,7 +106,9 @@ io.on('connection', function (socket) {
         player = io.sockets.connected[player_id];
         player.emit('victory');
         console.log(list.pop() + " wins.");
-        return ;
+        console.log('game ends');
+      } else {
+
       }
 
       player.emit('qn', {
@@ -118,28 +121,33 @@ io.on('connection', function (socket) {
 
       player.on('ans', function (data) {
         if (player_counter >= list.length) {
-            player_counter = 0;
-            round_num++;
-            console.log('round counter incremented.')
-            console.log('plcou: ' + player_counter)
-            console.log('rnum: ' + round_num)
-          }
-        if (data === "blue") {
-          player.emit('ans_correct');
-        } else {
+            
+            console.log('round counter incremented.');
+            console.log('plcou: ' + player_counter);
+            console.log('rnum: ' + round_num);
+            console.log('new game started');
+            start_game(list, ++round_num);
 
-          player.emit('ans_wrong');
-          var index = list.indexOf(player_id);
-          
-          if (index > -1) {
-            list.splice(index, 1);
-            player_counter--;
-          }
-          console.log('ans worng. player removed: ' + player_id)
-          console.log('nw list: '+ list);
+          } else {
+            if (data === "blue") {
+              player.emit('ans_correct');
+              console.log(player_id + " has correctly answered " + data)
+            } else {
+              player.emit('ans_wrong');
+              var index = list.indexOf(player_id);
+              
+              if (index > -1) {
+                list.splice(index, 1);
+                player_counter--;
+              }
+              console.log('ans worng. answer player wrote was: ' + data + 'player removed: ' + player_id)
+              console.log('nw list: '+ list);
 
-        }
-        ask(list[player_counter++]);
+            }
+
+            ask(list[player_counter++]);
+
+          }
       });
       
     }
@@ -189,7 +197,7 @@ io.on('connection', function (socket) {
 
       socket.emit('game_started', sckts);
 
-      start_game(sckts);
+      start_game(sckts, 1);
 
     });
 
