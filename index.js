@@ -45,6 +45,7 @@ io.on('connection', function (socket) {
     socket.username = username;
     // add the client's username to the global list
     usernames[username] = username;
+
     ++numUsers;
     addedUser = true;
     socket.emit('login', {
