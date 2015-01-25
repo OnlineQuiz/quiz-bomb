@@ -313,12 +313,25 @@ $(function() {
   client_auth();
 
   function game() {
+    $('#ans').html("").hide();
+    $('#play').hide();
+
     socket.on('qn', function (qn_data) {
       $('#qn').html(qn_data.question);
+      $('#round').html(qn_data.round);
+      $('#ans').show();
+      $('#play').show();
     });
+
+
 
     $('#play').click(function() {
       socket.emit('ans', $('#ans').val())
+      $('#qn').html("");
+      $('#round').html("");
+      $('#ans').html("");
+      $('#ans').hide();
+      $('#play').hide();
     });
 
     socket.on('ans_correct', function () {

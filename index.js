@@ -93,46 +93,60 @@ io.on('connection', function (socket) {
 */
 
   function start_game(list) {
-    var counter = 0;
+    var player_counter = 0;
+    var round_num = 1;
     function ask( player_id ) {
+      console.log('plid: ' + player_id)
       var player = io.sockets.connected[player_id];
 
-      if (list.length === 1) {
+      console.log('listlength: ' + list.length)
+      if (list.length < 2) {
+        player_id = list.pop();
+        player = io.sockets.connected[player_id];
         player.emit('victory');
+        console.log(list.pop() + " wins.");
         return ;
       }
 
       player.emit('qn', {
+        'round': round_num,
         'id': 1,
         'question': "What's the colour of the sky?",
         'answer' : "blue"
       })
+      console.log('qn emiited');
 
       player.on('ans', function (data) {
-        if (counter >= list.length) {
-            counter = 0;
+        if (player_counter >= list.length) {
+            player_counter = 0;
+            round_num++;
+            console.log('round counter incremented.')
+            console.log('plcou: ' + player_counter)
+            console.log('rnum: ' + round_num)
           }
         if (data === "blue") {
           player.emit('ans_correct');
         } else {
+
           player.emit('ans_wrong');
           var index = list.indexOf(player_id);
           
           if (index > -1) {
             list.splice(index, 1);
+            player_counter--;
           }
+          console.log('ans worng. player removed: ' + player_id)
+          console.log('nw list: '+ list);
 
         }
-        ask(list[++counter]);
+        ask(list[player_counter++]);
       });
       
     }
 
-    function check() {
-      
-    }
+    console.log('list:' + list + ', player counter: ' + player_counter);
+    ask(list[player_counter++]);
 
-    ask(list[counter]);
   }
 
 /** 
